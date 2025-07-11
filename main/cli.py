@@ -6,10 +6,10 @@ import ast
 from datetime import datetime, timedelta
 
 from utils.request_sender import RequestSender
+from utils.targets_finder import TargetsFinder
 
-with open("targets.json", "r") as file:
-    json_text = file.read()
-targets:dict = json.loads(json_text)
+base_path = os.path.dirname(os.path.abspath(__file__))
+targets = TargetsFinder.get_targets_from_json(base_path)
 
 targets_request = {}
 for name, url in targets.items():

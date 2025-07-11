@@ -11,7 +11,8 @@ from utils.targets_finder import TargetsFinder
 from utils.autorun import add_to_startup, remove_from_startup, is_in_startup
 
 # Get targets from json
-targets = TargetsFinder.get_targets_from_json()
+base_path = os.path.dirname(os.path.abspath(__file__))
+targets = TargetsFinder.get_targets_from_json(base_path)
 network_targets = TargetsFinder.get_targets_from_github()
 PROGRAM_NAME = "AntiBlock"
 
@@ -25,11 +26,17 @@ def change_targets():
     if network_menu_item.checked:
         network_menu_item._checked = lambda _: False
         tray.menu._items[0]._action = Menu(*menu_items.values())
-        os.environ["targets"] = str(targets)
+        new_targets = network_targets.copy()
     else:
         network_menu_item._checked = lambda _: True
         tray.menu._items[0]._action = Menu(*git_menu_items.values())
-        os.environ["targets"] = str(network_targets)
+        new_targets = targets.copy()
+
+    menu = git_menu_items if network_menu_item.checked else menu_items
+    for item_key in menu.keys():
+        if not menu[item_key].checked:
+            new_targets.pop(item_key)
+    os.environ["targets"] = str(new_targets)
     
 def switch(icon, self):
     "Select or deselect url for DDOS"
@@ -44,8 +51,9 @@ def switch(icon, self):
     else:
         new_targets = network_targets.copy()
         
-    for item_key in menu_items.keys():
-        if not menu_items[item_key].checked:
+    menu = git_menu_items if network_menu_item.checked else menu_items
+    for item_key in menu.keys():
+        if not menu[item_key].checked:
             new_targets.pop(item_key)
     os.environ["targets"] = str(new_targets)
 
@@ -68,8 +76,9 @@ for name, url in network_targets.items():
     git_menu_items[name] = MenuItem(name, switch, radio=True, checked=lambda _: True)
     
 os.environ["targets"] = str(network_targets)
-    
-icon = Image.open("icons/RKN.png")
+
+icon_path = os.path.join(base_path, "icons/RKN.png")
+icon = Image.open(icon_path)
 in_sturtup = is_in_startup(PROGRAM_NAME)
 tray = Icon(PROGRAM_NAME, icon, menu=Menu(
         MenuItem("Сайты", Menu(

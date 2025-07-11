@@ -1,12 +1,14 @@
 import json
+import os
 
 import requests
 
 class TargetsFinder:
 
     @staticmethod
-    def get_targets_from_json() -> dict:
-        with open("targets.json", "r") as file:
+    def get_targets_from_json(base_path) -> dict:
+        json_path = os.path.join(base_path, "targets.json")
+        with open(json_path, "r") as file:
             json_text = file.read()
         return json.loads(json_text)
 
