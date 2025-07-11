@@ -12,7 +12,7 @@ class TargetsFinder:
 
     @staticmethod
     def get_targets_from_github() -> dict:
-        url = "https://raw.githubusercontent.com/MrBrain-YT/AntiBlock/refs/heads/main/targets.json"
+        url = "https://raw.githubusercontent.com/MrBrain-YT/AntiBlock/refs/heads/main/main/targets.json"
         try:
             json_text = requests.get(url).text
             return json.loads(json_text)
